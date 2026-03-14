@@ -14,6 +14,7 @@ import { GameState, Position, ShiftPosition } from '../../core/models';
   standalone: true,
   imports: [CommonModule, TileComponent, ShiftArrowsComponent, PlayerPawnComponent],
   templateUrl: './board.component.html',
+  styleUrl: './board.component.css',
 })
 export class BoardComponent implements OnInit, OnDestroy {
   reachable: Position[] = [];

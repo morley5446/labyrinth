@@ -1,0 +1,378 @@
+/* ─── Root & Background ─────────────────────────────────────────── */
+
+.game-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'IM Fell English', Georgia, serif;
+  color: var(--parchment);
+}
+
+.game-bg {
+  position: absolute;
+  inset: 0;
+  background: url('/tiles/background.png') center / 100% 100% no-repeat;
+  z-index: 0;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 50%, transparent 30%, rgba(0,0,0,0.55) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ─── Main Layout ───────────────────────────────────────────────── */
+
+.game-layout {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  height: 100vh;
+  align-items: center;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────── */
+
+.sidebar {
+  width: 256px;
+  height: 100vh;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 18px 16px;
+  background:
+    linear-gradient(180deg, rgba(20,10,2,0.96) 0%, rgba(14,7,1,0.97) 100%);
+  border-right: 1px solid var(--panel-border);
+  box-shadow:
+    4px 0 40px rgba(0,0,0,0.7),
+    inset -1px 0 0 rgba(212,160,23,0.08),
+    inset 1px 0 20px rgba(212,160,23,0.03);
+  gap: 14px;
+  overflow: hidden;
+}
+
+/* ─── Header / Title ────────────────────────────────────────────── */
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.title-ornament {
+  font-size: 10px;
+  color: var(--gold);
+  opacity: 0.6;
+  letter-spacing: 6px;
+  text-align: center;
+}
+
+.game-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(212,160,23,0.5), 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.game-title span {
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+
+/* ─── Divider ───────────────────────────────────────────────────── */
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  flex-shrink: 0;
+}
+
+/* ─── Players ───────────────────────────────────────────────────── */
+
+.players-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(212,160,23,0.1);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-card.active {
+  border-color: rgba(212,160,23,0.45);
+  background: rgba(212,160,23,0.06);
+  animation: torchFlicker 4s ease-in-out infinite;
+}
+
+.player-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(212,160,23,0.06) 0%, transparent 40%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.player-card.active::before { opacity: 1; }
+
+.player-color-pip {
+  width: 8px;
+  height: 40px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.player-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.player-name {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--parchment);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-card.active .player-name { color: var(--gold-bright); }
+
+.player-score {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.player-score-total {
+  font-size: 11px;
+  color: var(--gold-dim);
+  font-weight: 400;
+}
+
+.player-quest {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 11px;
+  color: rgba(200,169,110,0.65);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-quest.win { color: #6dbf7e; }
+
+.active-torch {
+  font-size: 14px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px #d4a017);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ─── Phase ─────────────────────────────────────────────────────── */
+
+.phase-section {
+  text-align: center;
+}
+
+.phase-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 4px;
+}
+
+.phase-player {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  text-shadow: 0 0 12px rgba(212,160,23,0.4);
+}
+
+.phase-action {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: rgba(200,169,110,0.7);
+  margin-top: 3px;
+}
+
+/* ─── Spare Tile ────────────────────────────────────────────────── */
+
+.spare-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.spare-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+
+.spare-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spare-frame {
+  padding: 4px;
+  border: 1px solid rgba(212,160,23,0.3);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.4);
+  box-shadow:
+    0 0 12px rgba(0,0,0,0.6),
+    inset 0 0 8px rgba(212,160,23,0.05);
+}
+
+.rotate-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,160,23,0.35);
+  background: rgba(212,160,23,0.06);
+  color: var(--gold);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.rotate-btn:hover:not(:disabled) {
+  background: rgba(212,160,23,0.2);
+  border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(212,160,23,0.35);
+  transform: scale(1.1);
+}
+
+.rotate-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* ─── Spacer & Settings ─────────────────────────────────────────── */
+
+.spacer { flex: 1; }
+
+.settings-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(212,160,23,0.12);
+  background: transparent;
+  color: rgba(200,169,110,0.45);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  color: var(--gold);
+  border-color: rgba(212,160,23,0.3);
+  background: rgba(212,160,23,0.04);
+}
+
+.settings-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,160,23,0.4);
+  background: transparent;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.settings-dot.on {
+  background: var(--gold);
+  box-shadow: 0 0 6px rgba(212,160,23,0.6);
+}
+
+/* ─── Board Area ────────────────────────────────────────────────── */
+
+.board-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+/* ─── Board Grid ────────────────────────────────────────────────── */
+
+.board-grid {
+  display: grid;
+  gap: 2px;
+  padding: 4px;
+  background:
+    linear-gradient(135deg, #3a2010, #1e0d05);
+  border-radius: 10px;
+  border: 2px solid rgba(212,160,23,0.35);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.6),
+    0 8px 40px rgba(0,0,0,0.8),
+    inset 0 0 20px rgba(0,0,0,0.5),
+    0 0 60px rgba(0,0,0,0.4);
+}
+
+.tile-slot {
+  position: relative;
+  cursor: pointer;
+}
+
+/* ─── Shift Arrow Overrides ─────────────────────────────────────── */
+
+/* These target the shift-arrows component's buttons */
+:host ::ng-deep .shift-arrows button,
+app-shift-arrows button {
+  transition: all 0.2s ease;
+}

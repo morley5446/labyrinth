@@ -1,9 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=MedievalSharp&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-forest-dark text-gold-light min-h-screen;
+:root {
+  --gold:        #d4a017;
+  --gold-bright: #f0c040;
+  --gold-dim:    #8a6510;
+  --ember:       #c8780a;
+  --parchment:   #c8a96e;
+  --wood-dark:   #1a0e05;
+  --panel-bg:    rgba(10, 5, 1, 0.90);
+  --panel-border: rgba(212, 160, 23, 0.22);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0d0700;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+/* Torch flicker on active player */
+@keyframes torchFlicker {
+  0%,100% { opacity: 1;       box-shadow: 0 0 12px rgba(212,160,23,0.35), inset 0 0 8px rgba(212,160,23,0.08); }
+  25%      { opacity: 0.93;    box-shadow: 0 0 18px rgba(212,160,23,0.50), inset 0 0 12px rgba(212,160,23,0.12); }
+  50%      { opacity: 0.97;    box-shadow: 0 0 10px rgba(212,160,23,0.30), inset 0 0 6px rgba(212,160,23,0.06); }
+  75%      { opacity: 0.95;    box-shadow: 0 0 20px rgba(212,160,23,0.55), inset 0 0 14px rgba(212,160,23,0.14); }
+}
+
+@keyframes pulseGlow {
+  0%,100% { opacity: 0.7; }
+  50%      { opacity: 1.0; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
