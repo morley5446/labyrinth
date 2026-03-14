@@ -13,7 +13,7 @@ import { cardFlipAnimation } from '../../core/animations/game.animations';
       <div class="flex flex-col items-center gap-1" [@cardFlip]>
         <span class="text-xs text-gold/60 font-fairy">Nächster Schatz</span>
         <div class="w-16 h-16 bg-wood-dark rounded-lg border border-gold/40 flex items-center justify-center shadow-lg">
-          <img [src]="'assets/icons/' + player.cards[0] + '.svg'"
+          <img [src]="'icons/' + player.cards[0] + '.svg'"
                class="w-10 h-10" style="filter: drop-shadow(0 0 4px #d4a017)" />
         </div>
       </div>
