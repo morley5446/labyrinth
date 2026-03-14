@@ -1,35 +1,75 @@
 @if (game.state$ | async; as state) {
-<div class="flex flex-col items-center min-h-screen bg-forest-dark p-4">
+<div class="min-h-screen flex items-center justify-between gap-6 p-6"
+     style="background-image: url('tiles/background.png'); background-size: cover; background-position: center;">
 
-  <!-- Player status bar -->
-  <div class="flex gap-4 mb-4 flex-wrap justify-center">
-    @for (player of state.players; track player.id; let i = $index) {
-      <div class="px-4 py-2 rounded-lg border transition-all"
-           [class.border-gold]="i === state.currentPlayerIndex"
-           [class.border-wood]="i !== state.currentPlayerIndex"
-           [class.bg-wood-dark]="i === state.currentPlayerIndex">
-        <div class="flex items-center gap-2">
-          <div class="w-3 h-3 rounded-full" [style.background]="['#ef4444','#3b82f6','#22c55e','#eab308'][i]"></div>
-          <span class="text-gold font-fairy text-sm">{{ player.name }}</span>
-          <span class="text-gold/50 text-xs">{{ player.collectedCards.length }}/{{ player.collectedCards.length + player.cards.length }}</span>
+  <!-- LEFT PANEL: player info, spare tile, settings -->
+  <div class="flex flex-col gap-5 min-w-[200px] max-w-[220px]">
+
+    <!-- Player cards -->
+    <div class="flex flex-col gap-2">
+      @for (player of state.players; track player.id; let i = $index) {
+        <div class="px-3 py-2 rounded-lg border transition-all"
+             [class.border-gold]="i === state.currentPlayerIndex"
+             [class.border-wood]="i !== state.currentPlayerIndex"
+             [class.bg-wood-dark]="i === state.currentPlayerIndex"
+             style="background-color: rgba(30,18,8,0.75)">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full flex-shrink-0"
+                 [style.background]="['#ef4444','#3b82f6','#22c55e','#eab308'][i]"></div>
+            <span class="text-gold font-fairy text-sm">{{ player.name }}</span>
+            <span class="text-gold/50 text-xs ml-auto">{{ player.collectedCards.length }}/{{ player.collectedCards.length + player.cards.length }}</span>
+          </div>
+          @if (player.cards[0]) {
+            <div class="text-xs text-gold/60 mt-1 truncate">Sucht: {{ player.cards[0] }}</div>
+          } @else {
+            <div class="text-xs text-green-400 mt-1">Zurück zum Start!</div>
+          }
         </div>
-        @if (player.cards[0]) {
-          <div class="text-xs text-gold/60 mt-1">Sucht: {{ player.cards[0] }}</div>
-        } @else {
-          <div class="text-xs text-green-400 mt-1">Zurück zum Start!</div>
-        }
+      }
+    </div>
+
+    <!-- Phase indicator -->
+    <div class="text-gold-light/80 text-sm font-fairy text-center px-2 py-1 rounded"
+         style="background-color: rgba(30,18,8,0.6)">
+      {{ state.players[state.currentPlayerIndex].name }} —
+      {{ state.phase === 'shift' ? 'Kachel einschieben' : 'Figur bewegen' }}
+    </div>
+
+    <!-- Spare tile -->
+    <div class="flex flex-col items-center gap-2 p-3 rounded-xl"
+         style="background-color: rgba(30,18,8,0.6)">
+      <span class="text-gold/70 text-xs font-fairy">Spare-Kachel</span>
+      <div class="flex items-center gap-3">
+        <button
+          class="w-9 h-9 rounded-full border-2 border-gold/40 text-gold text-xl
+                 hover:bg-gold hover:text-forest-dark transition-all duration-200
+                 disabled:opacity-30 disabled:cursor-not-allowed"
+          [disabled]="state.phase !== 'shift'"
+          (click)="game.rotateSpareTile('left')"
+          title="Links drehen">↺</button>
+
+        <app-tile [tile]="state.spareTile" />
+
+        <button
+          class="w-9 h-9 rounded-full border-2 border-gold/40 text-gold text-xl
+                 hover:bg-gold hover:text-forest-dark transition-all duration-200
+                 disabled:opacity-30 disabled:cursor-not-allowed"
+          [disabled]="state.phase !== 'shift'"
+          (click)="game.rotateSpareTile('right')"
+          title="Rechts drehen">↻</button>
       </div>
-    }
+    </div>
+
+    <!-- Settings -->
+    <button class="text-xs text-gold/40 hover:text-gold/70 transition-colors text-center"
+            (click)="game.updateSettings({ showReachableFields: !state.settings.showReachableFields })">
+      Orientierungshilfe: {{ state.settings.showReachableFields ? 'Ein' : 'Aus' }}
+    </button>
+
   </div>
 
-  <!-- Phase indicator -->
-  <div class="text-gold-light/70 text-sm mb-3 font-fairy">
-    {{ state.players[state.currentPlayerIndex].name }} —
-    {{ state.phase === 'shift' ? 'Kachel einschieben' : 'Figur bewegen' }}
-  </div>
-
-  <!-- Board with shift arrows -->
-  <div class="relative mx-10 my-10">
+  <!-- RIGHT: board with shift arrows -->
+  <div class="flex-1 flex justify-center items-center">
     <app-shift-arrows
       [lastShift]="state.lastShift"
       [canShift]="state.phase === 'shift'"
@@ -53,36 +93,6 @@
 
     </app-shift-arrows>
   </div>
-
-  <!-- Spare tile with rotation buttons -->
-  <div class="mt-6 flex flex-col items-center gap-2">
-    <span class="text-gold/60 text-xs font-fairy">Spare-Kachel</span>
-    <div class="flex items-center gap-3">
-      <button
-        class="w-10 h-10 rounded-full border-2 border-gold/40 text-gold text-xl
-               hover:bg-gold hover:text-forest-dark transition-all duration-200
-               disabled:opacity-30 disabled:cursor-not-allowed"
-        [disabled]="state.phase !== 'shift'"
-        (click)="game.rotateSpareTile('left')"
-        title="Links drehen">↺</button>
-
-      <app-tile [tile]="state.spareTile" />
-
-      <button
-        class="w-10 h-10 rounded-full border-2 border-gold/40 text-gold text-xl
-               hover:bg-gold hover:text-forest-dark transition-all duration-200
-               disabled:opacity-30 disabled:cursor-not-allowed"
-        [disabled]="state.phase !== 'shift'"
-        (click)="game.rotateSpareTile('right')"
-        title="Rechts drehen">↻</button>
-    </div>
-  </div>
-
-  <!-- Settings toggle -->
-  <button class="mt-4 text-xs text-gold/40 hover:text-gold/70 transition-colors"
-          (click)="game.updateSettings({ showReachableFields: !state.settings.showReachableFields })">
-    Orientierungshilfe: {{ state.settings.showReachableFields ? 'Ein' : 'Aus' }}
-  </button>
 
 </div>
 }
