@@ -1,0 +1,59 @@
+<div class="relative inline-block">
+  <!-- Top arrows (insert from top, direction=down) -->
+  @for (idx of shiftIndices; track idx) {
+    <button
+      class="absolute -top-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
+      [class.text-gold]="canShift && !isBlocked('down', idx)"
+      [class.text-wood]="!canShift || isBlocked('down', idx)"
+      [style.left.px]="(idx * 84) - 12"
+      (click)="emit('down', idx)"
+      [disabled]="!canShift || isBlocked('down', idx)"
+      [title]="'Spalte ' + idx + ' von oben'">
+      ▼
+    </button>
+  }
+
+  <!-- Bottom arrows (insert from bottom, direction=up) -->
+  @for (idx of shiftIndices; track idx) {
+    <button
+      class="absolute -bottom-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
+      [class.text-gold]="canShift && !isBlocked('up', idx)"
+      [class.text-wood]="!canShift || isBlocked('up', idx)"
+      [style.left.px]="(idx * 84) - 12"
+      (click)="emit('up', idx)"
+      [disabled]="!canShift || isBlocked('up', idx)"
+      [title]="'Spalte ' + idx + ' von unten'">
+      ▲
+    </button>
+  }
+
+  <!-- Left arrows (insert from left, direction=right) -->
+  @for (idx of shiftIndices; track idx) {
+    <button
+      class="absolute -left-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
+      [class.text-gold]="canShift && !isBlocked('right', idx)"
+      [class.text-wood]="!canShift || isBlocked('right', idx)"
+      [style.top.px]="(idx * 84) - 12"
+      (click)="emit('right', idx)"
+      [disabled]="!canShift || isBlocked('right', idx)"
+      [title]="'Zeile ' + idx + ' von links'">
+      ▶
+    </button>
+  }
+
+  <!-- Right arrows (insert from right, direction=left) -->
+  @for (idx of shiftIndices; track idx) {
+    <button
+      class="absolute -right-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
+      [class.text-gold]="canShift && !isBlocked('left', idx)"
+      [class.text-wood]="!canShift || isBlocked('left', idx)"
+      [style.top.px]="(idx * 84) - 12"
+      (click)="emit('left', idx)"
+      [disabled]="!canShift || isBlocked('left', idx)"
+      [title]="'Zeile ' + idx + ' von rechts'">
+      ◀
+    </button>
+  }
+
+  <ng-content></ng-content>
+</div>

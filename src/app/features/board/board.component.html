@@ -1,0 +1,70 @@
+@if (game.state$ | async; as state) {
+<div class="flex flex-col items-center min-h-screen bg-forest-dark p-4">
+
+  <!-- Player status bar -->
+  <div class="flex gap-4 mb-4 flex-wrap justify-center">
+    @for (player of state.players; track player.id; let i = $index) {
+      <div class="px-4 py-2 rounded-lg border transition-all"
+           [class.border-gold]="i === state.currentPlayerIndex"
+           [class.border-wood]="i !== state.currentPlayerIndex"
+           [class.bg-wood-dark]="i === state.currentPlayerIndex">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full" [style.background]="['#ef4444','#3b82f6','#22c55e','#eab308'][i]"></div>
+          <span class="text-gold font-fairy text-sm">{{ player.name }}</span>
+          <span class="text-gold/50 text-xs">{{ player.collectedCards.length }}/{{ player.collectedCards.length + player.cards.length }}</span>
+        </div>
+        @if (player.cards[0]) {
+          <div class="text-xs text-gold/60 mt-1">Sucht: {{ player.cards[0] }}</div>
+        } @else {
+          <div class="text-xs text-green-400 mt-1">Zurück zum Start!</div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Phase indicator -->
+  <div class="text-gold-light/70 text-sm mb-3 font-fairy">
+    {{ state.players[state.currentPlayerIndex].name }} —
+    {{ state.phase === 'shift' ? 'Kachel einschieben' : 'Figur bewegen' }}
+  </div>
+
+  <!-- Board with shift arrows -->
+  <div class="relative mx-10 my-10">
+    <app-shift-arrows
+      [lastShift]="state.lastShift"
+      [canShift]="state.phase === 'shift'"
+      (shift)="onShift($event)">
+
+      <div class="grid gap-1 p-1 bg-wood-dark rounded-xl border-2 border-gold/30 shadow-2xl"
+           style="grid-template-columns: repeat(7, 80px)">
+        @for (row of state.board; track $index; let r = $index) {
+          @for (tile of row; track $index; let c = $index) {
+            <div class="relative" (click)="onTileClick(state, r, c)">
+              <app-tile [tile]="tile"
+                        [highlighted]="state.settings.showReachableFields && isReachable(r, c)"
+                        [selected]="false" />
+              @for (player of playersAt(state, r, c); track player.id) {
+                <app-player-pawn [color]="player.color" />
+              }
+            </div>
+          }
+        }
+      </div>
+
+    </app-shift-arrows>
+  </div>
+
+  <!-- Spare tile -->
+  <div class="mt-6 flex flex-col items-center gap-2">
+    <span class="text-gold/60 text-xs font-fairy">Spare-Kachel</span>
+    <app-tile [tile]="state.spareTile" />
+  </div>
+
+  <!-- Settings toggle -->
+  <button class="mt-4 text-xs text-gold/40 hover:text-gold/70 transition-colors"
+          (click)="game.updateSettings({ showReachableFields: !state.settings.showReachableFields })">
+    Orientierungshilfe: {{ state.settings.showReachableFields ? 'Ein' : 'Aus' }}
+  </button>
+
+</div>
+}
