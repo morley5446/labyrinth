@@ -39,8 +39,8 @@
             [class.hover:text-forest-dark]="canShift && !isBlocked('right', i)"
             [class.text-wood]="!canShift || isBlocked('right', i)"
             [class.opacity-30]="isBlocked('right', i)"
-            (click)="emit('right', i)"
-            [disabled]="!canShift || isBlocked('right', i)"
+            (click)="emit('left', i)"
+            [disabled]="!canShift || isBlocked('left', i)"
             [title]="'Zeile ' + i + ' von links'">▶</button>
         }
       </div>
@@ -62,8 +62,8 @@
             [class.hover:text-forest-dark]="canShift && !isBlocked('left', i)"
             [class.text-wood]="!canShift || isBlocked('left', i)"
             [class.opacity-30]="isBlocked('left', i)"
-            (click)="emit('left', i)"
-            [disabled]="!canShift || isBlocked('left', i)"
+            (click)="emit('right', i)"
+            [disabled]="!canShift || isBlocked('right', i)"
             [title]="'Zeile ' + i + ' von rechts'">◀</button>
         }
       </div>

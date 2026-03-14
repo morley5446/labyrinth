@@ -143,21 +143,23 @@ export class BoardService {
         }
       });
     } else if (direction === 'up') {
-      newSpare = newBoard[6][index];
-      for (let r = 6; r > 0; r--) newBoard[r][index] = newBoard[r - 1][index];
-      newBoard[0][index] = spare;
-      newPlayers?.forEach(p => {
-        if (p.position.col === index) {
-          p.position.row = p.position.row === 6 ? 0 : p.position.row + 1;
-        }
-      });
-    } else { // down
+      // Insert from bottom, tiles shift up, top tile falls out
       newSpare = newBoard[0][index];
       for (let r = 0; r < 6; r++) newBoard[r][index] = newBoard[r + 1][index];
       newBoard[6][index] = spare;
       newPlayers?.forEach(p => {
         if (p.position.col === index) {
           p.position.row = p.position.row === 0 ? 6 : p.position.row - 1;
+        }
+      });
+    } else { // down
+      // Insert from top, tiles shift down, bottom tile falls out
+      newSpare = newBoard[6][index];
+      for (let r = 6; r > 0; r--) newBoard[r][index] = newBoard[r - 1][index];
+      newBoard[0][index] = spare;
+      newPlayers?.forEach(p => {
+        if (p.position.col === index) {
+          p.position.row = p.position.row === 6 ? 0 : p.position.row + 1;
         }
       });
     }
