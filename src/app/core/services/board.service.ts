@@ -173,6 +173,88 @@ export class BoardService {
     return last.index === current.index && reverseDir[last.direction] === current.direction;
   }
 
+  private connected(board: Tile[][], from: Position, to: Position): boolean {
+    const dr = to.row - from.row;
+    const dc = to.col - from.col;
+    const fromTile = board[from.row][from.col];
+    const toTile = board[to.row][to.col];
+
+    if (dr === -1) return fromTile.paths.north && toTile.paths.south;
+    if (dr === 1)  return fromTile.paths.south && toTile.paths.north;
+    if (dc === -1) return fromTile.paths.west  && toTile.paths.east;
+    if (dc === 1)  return fromTile.paths.east  && toTile.paths.west;
+    return false;
+  }
+
+  getReachablePositions(board: Tile[][], start: Position): Position[] {
+    const visited = new Set<string>();
+    const queue: Position[] = [start];
+    const key = (p: Position) => `${p.row},${p.col}`;
+    visited.add(key(start));
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const neighbors: Position[] = [
+        { row: current.row - 1, col: current.col },
+        { row: current.row + 1, col: current.col },
+        { row: current.row, col: current.col - 1 },
+        { row: current.row, col: current.col + 1 },
+      ].filter(p => p.row >= 0 && p.row < 7 && p.col >= 0 && p.col < 7);
+
+      for (const neighbor of neighbors) {
+        if (!visited.has(key(neighbor)) && this.connected(board, current, neighbor)) {
+          visited.add(key(neighbor));
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return [...visited].map(k => {
+      const [r, c] = k.split(',').map(Number);
+      return { row: r, col: c };
+    });
+  }
+
+  getPath(board: Tile[][], start: Position, target: Position): Position[] | null {
+    const key = (p: Position) => `${p.row},${p.col}`;
+    const visited = new Map<string, Position | null>();
+    const queue: Position[] = [start];
+    visited.set(key(start), null);
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (key(current) === key(target)) {
+        // Reconstruct path
+        const path: Position[] = [];
+        let pos: Position | null = current;
+        while (pos !== null) {
+          path.unshift(pos);
+          pos = visited.get(key(pos)) ?? null;
+          if (pos && key(pos) === key(start) && path[0] && key(path[0]) !== key(start)) {
+            path.unshift(pos);
+            break;
+          }
+        }
+        return path;
+      }
+
+      const neighbors: Position[] = [
+        { row: current.row - 1, col: current.col },
+        { row: current.row + 1, col: current.col },
+        { row: current.row, col: current.col - 1 },
+        { row: current.row, col: current.col + 1 },
+      ].filter(p => p.row >= 0 && p.row < 7 && p.col >= 0 && p.col < 7);
+
+      for (const neighbor of neighbors) {
+        if (!visited.has(key(neighbor)) && this.connected(board, current, neighbor)) {
+          visited.set(key(neighbor), current);
+          queue.push(neighbor);
+        }
+      }
+    }
+    return null;
+  }
+
   initializePlayers(configs: { name: string; isAI: boolean; aiDifficulty?: any }[], playerCount: number): Player[] {
     return configs.slice(0, playerCount).map((config, i) => {
       const id = (i + 1) as PlayerId;

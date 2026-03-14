@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { BoardService } from './board.service';
-import { Player } from '../models';
+import { Player, Tile, Rotation, Position } from '../models';
 
 describe('BoardService - tile paths', () => {
   let service: BoardService;
@@ -83,5 +83,50 @@ describe('BoardService - shift mechanic', () => {
     ];
     const result = service.shiftTiles(board, spareTile, { direction: 'left', index: 1 }, players);
     expect(result.newPlayers![0].position).toEqual({ row: 1, col: 0 });
+  });
+});
+
+describe('BoardService - BFS pathfinding', () => {
+  let service: BoardService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(BoardService);
+  });
+
+  it('finds reachable fields from a position', () => {
+    // Build a simple board: all straight vertical tiles
+    const straight = (r: Rotation): Tile => ({
+      type: 'straight', rotation: r, treasure: null,
+      paths: service.computePaths('straight', r)
+    });
+    const board: Tile[][] = Array.from({ length: 7 }, () =>
+      Array.from({ length: 7 }, () => straight(0)) // all north-south
+    );
+    const reachable = service.getReachablePositions(board, { row: 3, col: 3 });
+    // From center with all vertical straights: can go north and south in same column
+    expect(reachable.some(p => p.row === 0 && p.col === 3)).toBe(true);
+    expect(reachable.some(p => p.row === 6 && p.col === 3)).toBe(true);
+    // Cannot cross to adjacent column (no east/west openings)
+    expect(reachable.some(p => p.col === 4)).toBe(false);
+  });
+
+  it('can stay at current position (always reachable)', () => {
+    const { board } = service.initializeBoard(2);
+    const reachable = service.getReachablePositions(board, { row: 0, col: 0 });
+    expect(reachable.some(p => p.row === 0 && p.col === 0)).toBe(true);
+  });
+
+  it('returns path to target', () => {
+    const straight = (r: Rotation): Tile => ({
+      type: 'straight', rotation: r, treasure: null,
+      paths: service.computePaths('straight', r)
+    });
+    const board: Tile[][] = Array.from({ length: 7 }, () =>
+      Array.from({ length: 7 }, () => straight(0))
+    );
+    const path = service.getPath(board, { row: 0, col: 3 }, { row: 6, col: 3 });
+    expect(path).not.toBeNull();
+    expect(path![path!.length - 1]).toEqual({ row: 6, col: 3 });
   });
 });
