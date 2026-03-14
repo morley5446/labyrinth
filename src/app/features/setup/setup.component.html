@@ -1,0 +1,56 @@
+<div class="min-h-screen flex flex-col items-center justify-center p-8 bg-forest-dark">
+  <h1 class="text-5xl font-fairy text-gold mb-2 drop-shadow-lg">Das verrückte Labyrinth</h1>
+  <p class="text-gold-light/60 mb-10 text-lg">Wähle deine Abenteurer</p>
+
+  <div class="grid grid-cols-2 gap-4 mb-8 w-full max-w-2xl">
+    @for (player of players; track player; let i = $index) {
+      <div class="rounded-xl border-2 p-4 transition-all duration-300"
+           [class.border-gold]="player.active"
+           [class.border-wood]="!player.active"
+           [class.bg-wood-dark]="player.active"
+           [class.opacity-60]="!player.active">
+
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-5 h-5 rounded-full border-2 border-gold"
+               [style.background]="colors[i]"></div>
+          <input [(ngModel)]="player.name"
+                 class="bg-transparent text-gold font-fairy text-lg flex-1 border-b border-gold/30 focus:outline-none focus:border-gold"
+                 [disabled]="!player.active" />
+          <label class="cursor-pointer">
+            <input type="checkbox" [(ngModel)]="player.active" class="sr-only" />
+            <span class="text-xs text-gold/60">{{ player.active ? 'Aktiv' : 'Inaktiv' }}</span>
+          </label>
+        </div>
+
+        @if (player.active) {
+          <div class="flex gap-2">
+            <button class="flex-1 py-1 px-2 rounded text-xs transition-colors"
+                    [class.bg-gold]="!player.isAI" [class.text-forest-dark]="!player.isAI"
+                    [class.text-gold]="player.isAI"
+                    (click)="player.isAI = false">Mensch</button>
+            <button class="flex-1 py-1 px-2 rounded text-xs transition-colors"
+                    [class.bg-gold]="player.isAI" [class.text-forest-dark]="player.isAI"
+                    [class.text-gold]="!player.isAI"
+                    (click)="player.isAI = true">KI</button>
+          </div>
+
+          @if (player.isAI) {
+            <select [(ngModel)]="player.aiDifficulty"
+                    class="mt-2 w-full bg-wood-dark text-gold-light text-xs rounded px-2 py-1 border border-gold/20">
+              <option value="easy">Leicht</option>
+              <option value="medium">Mittel</option>
+              <option value="hard">Schwer</option>
+            </select>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <button (click)="onStart()" [disabled]="!canStart"
+          class="px-12 py-4 bg-gold text-forest-dark font-fairy text-2xl rounded-xl
+                 hover:bg-gold-light transition-all duration-300 shadow-lg
+                 disabled:opacity-40 disabled:cursor-not-allowed">
+    Abenteuer beginnen!
+  </button>
+</div>
