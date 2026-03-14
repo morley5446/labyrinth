@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
 
 body {
   @apply bg-forest-dark text-gold-light min-h-screen;
