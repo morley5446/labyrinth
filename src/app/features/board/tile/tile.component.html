@@ -33,9 +33,9 @@
 
   <!-- Treasure icon -->
   @if (tile.treasure) {
-    <image [attr.href]="'icons/' + tile.treasure + '.svg'"
+    <image [attr.href]="'icons/' + tile.treasure + '.jpg'"
            x="22" y="22" width="36" height="36"
-           style="filter: drop-shadow(0 0 3px #d4a017)"/>
+           style="mix-blend-mode: multiply; filter: drop-shadow(0 0 3px #d4a017)"/>
   }
 
   <!-- Highlight overlay for reachable fields -->
