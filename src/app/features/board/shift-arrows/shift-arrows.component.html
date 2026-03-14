@@ -1,59 +1,99 @@
-<div class="relative inline-block">
-  <!-- Top arrows (insert from top, direction=down) -->
-  @for (idx of shiftIndices; track idx) {
-    <button
-      class="absolute -top-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
-      [class.text-gold]="canShift && !isBlocked('down', idx)"
-      [class.text-wood]="!canShift || isBlocked('down', idx)"
-      [style.left.px]="(idx * 84) - 12"
-      (click)="emit('down', idx)"
-      [disabled]="!canShift || isBlocked('down', idx)"
-      [title]="'Spalte ' + idx + ' von oben'">
-      ▼
-    </button>
-  }
+<!-- Outer grid: 3 cols (left-arrows | board | right-arrows) x 3 rows (top | board | bottom) -->
+<div style="display: inline-grid; grid-template-columns: 36px auto 36px; grid-template-rows: 36px auto 36px; align-items: center; justify-items: center">
 
-  <!-- Bottom arrows (insert from bottom, direction=up) -->
-  @for (idx of shiftIndices; track idx) {
-    <button
-      class="absolute -bottom-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
-      [class.text-gold]="canShift && !isBlocked('up', idx)"
-      [class.text-wood]="!canShift || isBlocked('up', idx)"
-      [style.left.px]="(idx * 84) - 12"
-      (click)="emit('up', idx)"
-      [disabled]="!canShift || isBlocked('up', idx)"
-      [title]="'Spalte ' + idx + ' von unten'">
-      ▲
-    </button>
-  }
+  <!-- [0,0] top-left corner -->
+  <div></div>
 
-  <!-- Left arrows (insert from left, direction=right) -->
-  @for (idx of shiftIndices; track idx) {
-    <button
-      class="absolute -left-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
-      [class.text-gold]="canShift && !isBlocked('right', idx)"
-      [class.text-wood]="!canShift || isBlocked('right', idx)"
-      [style.top.px]="(idx * 84) - 12"
-      (click)="emit('right', idx)"
-      [disabled]="!canShift || isBlocked('right', idx)"
-      [title]="'Zeile ' + idx + ' von links'">
-      ▶
-    </button>
-  }
+  <!-- [0,1] top arrows — flex row aligned with tile columns -->
+  <div style="display: flex; padding: 0 6px; gap: 4px; align-items: center; justify-content: flex-start; width: 100%">
+    @for (i of allSlots; track i) {
+      <div style="width: 80px; display: flex; justify-content: center; flex-shrink: 0">
+        @if (isShiftable(i)) {
+          <button
+            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
+            [class.text-gold]="canShift && !isBlocked('down', i)"
+            [class.hover:bg-gold]="canShift && !isBlocked('down', i)"
+            [class.hover:text-forest-dark]="canShift && !isBlocked('down', i)"
+            [class.text-wood]="!canShift || isBlocked('down', i)"
+            [class.opacity-30]="isBlocked('down', i)"
+            (click)="emit('down', i)"
+            [disabled]="!canShift || isBlocked('down', i)"
+            [title]="'Spalte ' + i + ' von oben'">▼</button>
+        }
+      </div>
+    }
+  </div>
 
-  <!-- Right arrows (insert from right, direction=left) -->
-  @for (idx of shiftIndices; track idx) {
-    <button
-      class="absolute -right-9 flex items-center justify-center w-8 h-8 rounded-full transition-all text-lg"
-      [class.text-gold]="canShift && !isBlocked('left', idx)"
-      [class.text-wood]="!canShift || isBlocked('left', idx)"
-      [style.top.px]="(idx * 84) - 12"
-      (click)="emit('left', idx)"
-      [disabled]="!canShift || isBlocked('left', idx)"
-      [title]="'Zeile ' + idx + ' von rechts'">
-      ◀
-    </button>
-  }
+  <!-- [0,2] top-right corner -->
+  <div></div>
 
+  <!-- [1,0] left arrows — flex column aligned with tile rows -->
+  <div style="display: flex; flex-direction: column; padding: 6px 0; gap: 4px; align-items: center; height: 100%">
+    @for (i of allSlots; track i) {
+      <div style="height: 80px; display: flex; align-items: center; flex-shrink: 0">
+        @if (isShiftable(i)) {
+          <button
+            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
+            [class.text-gold]="canShift && !isBlocked('right', i)"
+            [class.hover:bg-gold]="canShift && !isBlocked('right', i)"
+            [class.hover:text-forest-dark]="canShift && !isBlocked('right', i)"
+            [class.text-wood]="!canShift || isBlocked('right', i)"
+            [class.opacity-30]="isBlocked('right', i)"
+            (click)="emit('right', i)"
+            [disabled]="!canShift || isBlocked('right', i)"
+            [title]="'Zeile ' + i + ' von links'">▶</button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- [1,1] board content -->
   <ng-content></ng-content>
+
+  <!-- [1,2] right arrows -->
+  <div style="display: flex; flex-direction: column; padding: 6px 0; gap: 4px; align-items: center; height: 100%">
+    @for (i of allSlots; track i) {
+      <div style="height: 80px; display: flex; align-items: center; flex-shrink: 0">
+        @if (isShiftable(i)) {
+          <button
+            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
+            [class.text-gold]="canShift && !isBlocked('left', i)"
+            [class.hover:bg-gold]="canShift && !isBlocked('left', i)"
+            [class.hover:text-forest-dark]="canShift && !isBlocked('left', i)"
+            [class.text-wood]="!canShift || isBlocked('left', i)"
+            [class.opacity-30]="isBlocked('left', i)"
+            (click)="emit('left', i)"
+            [disabled]="!canShift || isBlocked('left', i)"
+            [title]="'Zeile ' + i + ' von rechts'">◀</button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- [2,0] bottom-left corner -->
+  <div></div>
+
+  <!-- [2,1] bottom arrows -->
+  <div style="display: flex; padding: 0 6px; gap: 4px; align-items: center; justify-content: flex-start; width: 100%">
+    @for (i of allSlots; track i) {
+      <div style="width: 80px; display: flex; justify-content: center; flex-shrink: 0">
+        @if (isShiftable(i)) {
+          <button
+            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
+            [class.text-gold]="canShift && !isBlocked('up', i)"
+            [class.hover:bg-gold]="canShift && !isBlocked('up', i)"
+            [class.hover:text-forest-dark]="canShift && !isBlocked('up', i)"
+            [class.text-wood]="!canShift || isBlocked('up', i)"
+            [class.opacity-30]="isBlocked('up', i)"
+            (click)="emit('up', i)"
+            [disabled]="!canShift || isBlocked('up', i)"
+            [title]="'Spalte ' + i + ' von unten'">▲</button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- [2,2] bottom-right corner -->
+  <div></div>
+
 </div>

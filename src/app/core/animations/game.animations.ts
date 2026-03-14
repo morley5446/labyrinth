@@ -1,9 +1,9 @@
 import { animate, style, transition, trigger, keyframes } from '@angular/animations';
 
 export const tileSlideAnimation = trigger('tileSlide', [
-  transition(':enter', [
-    style({ transform: 'translateX(-100%)', opacity: 0 }),
-    animate('400ms ease-in-out', style({ transform: 'translateX(0)', opacity: 1 })),
+  transition('* => *', [
+    style({ opacity: 0.3, transform: 'scale(0.88)' }),
+    animate('300ms cubic-bezier(0.25, 0.8, 0.25, 1)', style({ opacity: 1, transform: 'scale(1)' })),
   ]),
 ]);
 

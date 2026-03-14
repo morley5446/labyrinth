@@ -14,6 +14,11 @@ export class ShiftArrowsComponent {
   @Output() shift = new EventEmitter<ShiftPosition>();
 
   readonly shiftIndices = [1, 3, 5] as const;
+  readonly allSlots = [0, 1, 2, 3, 4, 5, 6];
+
+  isShiftable(index: number): boolean {
+    return index === 1 || index === 3 || index === 5;
+  }
 
   isBlocked(direction: string, index: number): boolean {
     if (!this.lastShift) return false;
