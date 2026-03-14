@@ -16,4 +16,19 @@ export class TileComponent {
   @Input() highlighted = false;
   @Input() selected = false;
   @Input() size = 80;
+
+  get tileImage(): string {
+    switch (this.tile.type) {
+      case 'straight': return 'tiles/straight.png';
+      case 'curve':    return 'tiles/curve.png';
+      default:         return 'tiles/t-cross.png';  // 'T'
+    }
+  }
+
+  // straight.png base = rotation 0 (N+S)
+  // curve.png and t-cross.png base = rotation 90 (S+E and N+S+E)
+  get cssRotation(): number {
+    if (this.tile.type === 'straight') return this.tile.rotation;
+    return (this.tile.rotation - 90 + 360) % 360;
+  }
 }

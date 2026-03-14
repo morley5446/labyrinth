@@ -1,45 +1,25 @@
-<div class="tile-container relative overflow-hidden rounded-sm"
+<div class="tile-container relative overflow-hidden"
      [style.width.px]="size" [style.height.px]="size"
      [@tileSlide]="tile.type + tile.rotation + tile.treasure"
      [class.tile-highlighted]="highlighted"
      [class.tile-selected]="selected">
 
-  <!-- Wall background texture -->
-  <div class="wall-bg absolute inset-0"></div>
-
-  <!-- Corridor paths (floor texture) -->
-  @if (tile.paths.north) {
-    <div class="corridor-floor absolute" style="left: 29px; top: 0; width: 22px; height: 41px;"></div>
-  }
-  @if (tile.paths.south) {
-    <div class="corridor-floor absolute" style="left: 29px; top: 39px; width: 22px; height: 41px;"></div>
-  }
-  @if (tile.paths.east) {
-    <div class="corridor-floor absolute" style="left: 39px; top: 29px; width: 41px; height: 22px;"></div>
-  }
-  @if (tile.paths.west) {
-    <div class="corridor-floor absolute" style="left: 0; top: 29px; width: 41px; height: 22px;"></div>
-  }
-
-  <!-- Center fill -->
-  <div class="corridor-floor absolute" style="left: 29px; top: 29px; width: 22px; height: 22px;"></div>
-
-  <!-- Gold border ornament at center -->
-  <div class="absolute pointer-events-none"
-       style="left: 29px; top: 29px; width: 22px; height: 22px; border: 1px solid rgba(212,160,23,0.6);"></div>
+  <!-- Base tile image, rotated to match corridor orientation -->
+  <img [src]="tileImage"
+       class="absolute inset-0 tile-img"
+       [style.transform]="'rotate(' + cssRotation + 'deg)'"
+       alt="" />
 
   <!-- Treasure icon -->
   @if (tile.treasure) {
     <img [src]="'icons/' + tile.treasure + '.jpg'"
-         class="absolute pointer-events-none"
-         style="left: 22px; top: 22px; width: 36px; height: 36px; mix-blend-mode: multiply; filter: drop-shadow(0 0 3px #d4a017);"
+         class="absolute pointer-events-none treasure-icon"
          [alt]="tile.treasure" />
   }
 
-  <!-- Highlight overlay -->
+  <!-- Reachable highlight overlay -->
   @if (highlighted) {
-    <div class="absolute inset-0 pointer-events-none"
-         style="background: rgba(212,160,23,0.2);"></div>
+    <div class="absolute inset-0 pointer-events-none highlight-overlay"></div>
   }
 
 </div>
