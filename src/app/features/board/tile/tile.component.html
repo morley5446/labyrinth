@@ -1,26 +1,45 @@
-<div class="tile-container relative overflow-hidden"
+<div class="tile-container relative overflow-hidden rounded-sm"
      [style.width.px]="size" [style.height.px]="size"
      [@tileSlide]="tile.type + tile.rotation + tile.treasure"
      [class.tile-highlighted]="highlighted"
      [class.tile-selected]="selected">
 
-  <!-- 5×5 sprite grid (5 × 16px = 80px) -->
-  <div class="sprite-grid absolute inset-0">
-    @for (cell of cells; track $index) {
-      <div class="sprite-cell" [style.background-position]="bgPos(cell)"></div>
-    }
-  </div>
+  <!-- Wall background texture -->
+  <div class="wall-bg absolute inset-0"></div>
 
-  <!-- Treasure icon centred on tile -->
+  <!-- Corridor paths (floor texture) -->
+  @if (tile.paths.north) {
+    <div class="corridor-floor absolute" style="left: 29px; top: 0; width: 22px; height: 41px;"></div>
+  }
+  @if (tile.paths.south) {
+    <div class="corridor-floor absolute" style="left: 29px; top: 39px; width: 22px; height: 41px;"></div>
+  }
+  @if (tile.paths.east) {
+    <div class="corridor-floor absolute" style="left: 39px; top: 29px; width: 41px; height: 22px;"></div>
+  }
+  @if (tile.paths.west) {
+    <div class="corridor-floor absolute" style="left: 0; top: 29px; width: 41px; height: 22px;"></div>
+  }
+
+  <!-- Center fill -->
+  <div class="corridor-floor absolute" style="left: 29px; top: 29px; width: 22px; height: 22px;"></div>
+
+  <!-- Gold border ornament at center -->
+  <div class="absolute pointer-events-none"
+       style="left: 29px; top: 29px; width: 22px; height: 22px; border: 1px solid rgba(212,160,23,0.6);"></div>
+
+  <!-- Treasure icon -->
   @if (tile.treasure) {
     <img [src]="'icons/' + tile.treasure + '.jpg'"
-         class="absolute pointer-events-none treasure-icon"
+         class="absolute pointer-events-none"
+         style="left: 22px; top: 22px; width: 36px; height: 36px; mix-blend-mode: multiply; filter: drop-shadow(0 0 3px #d4a017);"
          [alt]="tile.treasure" />
   }
 
-  <!-- Reachable highlight overlay -->
+  <!-- Highlight overlay -->
   @if (highlighted) {
-    <div class="absolute inset-0 pointer-events-none highlight-overlay"></div>
+    <div class="absolute inset-0 pointer-events-none"
+         style="background: rgba(212,160,23,0.2);"></div>
   }
 
 </div>
