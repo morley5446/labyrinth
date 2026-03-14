@@ -1,7 +1,6 @@
-.tile-svg {
+.tile-container {
   cursor: default;
-  border-radius: 4px;
-  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
 }
 
 .tile-highlighted {
@@ -11,4 +10,20 @@
 
 .tile-selected {
   filter: drop-shadow(0 0 8px #fff);
+}
+
+.wall-bg {
+  background-image: url('/sprites/Tiles/tile_0000.png');
+  background-size: 16px 16px;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.corridor-floor {
+  background-image: url('/sprites/Tiles/tile_0048.png');
+  background-size: 16px 16px;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
