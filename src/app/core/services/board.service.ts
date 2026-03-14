@@ -112,6 +112,67 @@ export class BoardService {
     return { board, spareTile };
   }
 
+  shiftTiles(
+    board: Tile[][],
+    spare: Tile,
+    shift: ShiftPosition,
+    players?: Player[]
+  ): { newBoard: Tile[][], newSpare: Tile, newPlayers?: Player[] } {
+    const newBoard = board.map(row => [...row]);
+    let newSpare: Tile;
+    let newPlayers = players ? players.map(p => ({ ...p, position: { ...p.position } })) : undefined;
+
+    const { direction, index } = shift;
+
+    if (direction === 'left') {
+      newSpare = newBoard[index][6];
+      for (let c = 6; c > 0; c--) newBoard[index][c] = newBoard[index][c - 1];
+      newBoard[index][0] = spare;
+      newPlayers?.forEach(p => {
+        if (p.position.row === index) {
+          p.position.col = p.position.col === 6 ? 0 : p.position.col + 1;
+        }
+      });
+    } else if (direction === 'right') {
+      newSpare = newBoard[index][0];
+      for (let c = 0; c < 6; c++) newBoard[index][c] = newBoard[index][c + 1];
+      newBoard[index][6] = spare;
+      newPlayers?.forEach(p => {
+        if (p.position.row === index) {
+          p.position.col = p.position.col === 0 ? 6 : p.position.col - 1;
+        }
+      });
+    } else if (direction === 'up') {
+      newSpare = newBoard[6][index];
+      for (let r = 6; r > 0; r--) newBoard[r][index] = newBoard[r - 1][index];
+      newBoard[0][index] = spare;
+      newPlayers?.forEach(p => {
+        if (p.position.col === index) {
+          p.position.row = p.position.row === 6 ? 0 : p.position.row + 1;
+        }
+      });
+    } else { // down
+      newSpare = newBoard[0][index];
+      for (let r = 0; r < 6; r++) newBoard[r][index] = newBoard[r + 1][index];
+      newBoard[6][index] = spare;
+      newPlayers?.forEach(p => {
+        if (p.position.col === index) {
+          p.position.row = p.position.row === 0 ? 6 : p.position.row - 1;
+        }
+      });
+    }
+
+    return { newBoard, newSpare: newSpare!, newPlayers };
+  }
+
+  isReverseShift(last: ShiftPosition | null, current: ShiftPosition): boolean {
+    if (!last) return false;
+    const reverseDir: Record<string, string> = {
+      left: 'right', right: 'left', up: 'down', down: 'up'
+    };
+    return last.index === current.index && reverseDir[last.direction] === current.direction;
+  }
+
   initializePlayers(configs: { name: string; isAI: boolean; aiDifficulty?: any }[], playerCount: number): Player[] {
     return configs.slice(0, playerCount).map((config, i) => {
       const id = (i + 1) as PlayerId;
