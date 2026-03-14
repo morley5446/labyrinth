@@ -107,6 +107,19 @@ export class GameService {
     });
   }
 
+  rotateSpareTile(direction: 'left' | 'right'): void {
+    const state = this.snapshot;
+    if (state.phase !== 'shift') return;
+    const spare = state.spareTile;
+    const rotations = [0, 90, 180, 270] as const;
+    const current = rotations.indexOf(spare.rotation);
+    const next = direction === 'right'
+      ? rotations[(current + 1) % 4]
+      : rotations[(current + 3) % 4];
+    const rotated = { ...spare, rotation: next, paths: this.board.computePaths(spare.type, next) };
+    this.stateSubject.next({ ...state, spareTile: rotated });
+  }
+
   resetGame(): void {
     this.stateSubject.next(INITIAL_STATE);
   }

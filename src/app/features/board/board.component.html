@@ -54,10 +54,28 @@
     </app-shift-arrows>
   </div>
 
-  <!-- Spare tile -->
+  <!-- Spare tile with rotation buttons -->
   <div class="mt-6 flex flex-col items-center gap-2">
     <span class="text-gold/60 text-xs font-fairy">Spare-Kachel</span>
-    <app-tile [tile]="state.spareTile" />
+    <div class="flex items-center gap-3">
+      <button
+        class="w-10 h-10 rounded-full border-2 border-gold/40 text-gold text-xl
+               hover:bg-gold hover:text-forest-dark transition-all duration-200
+               disabled:opacity-30 disabled:cursor-not-allowed"
+        [disabled]="state.phase !== 'shift'"
+        (click)="game.rotateSpareTile('left')"
+        title="Links drehen">↺</button>
+
+      <app-tile [tile]="state.spareTile" />
+
+      <button
+        class="w-10 h-10 rounded-full border-2 border-gold/40 text-gold text-xl
+               hover:bg-gold hover:text-forest-dark transition-all duration-200
+               disabled:opacity-30 disabled:cursor-not-allowed"
+        [disabled]="state.phase !== 'shift'"
+        (click)="game.rotateSpareTile('right')"
+        title="Rechts drehen">↻</button>
+    </div>
   </div>
 
   <!-- Settings toggle -->
