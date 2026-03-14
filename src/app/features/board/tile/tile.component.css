@@ -1,6 +1,5 @@
 .tile-container {
   cursor: default;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
 }
 
 .tile-highlighted {
@@ -12,18 +11,31 @@
   filter: drop-shadow(0 0 8px #fff);
 }
 
-.wall-bg {
-  background-image: url('/sprites/Tiles/tile_0000.png');
-  background-size: 16px 16px;
-  background-repeat: repeat;
+.sprite-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 16px);
+  grid-template-rows: repeat(5, 16px);
+}
+
+.sprite-cell {
+  width: 16px;
+  height: 16px;
+  background-image: url('/sprites/Tilemap/tilemap_packed.png');
+  background-size: 192px 176px; /* 12 × 16px cols, 11 × 16px rows */
+  background-repeat: no-repeat;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
 
-.corridor-floor {
-  background-image: url('/sprites/Tiles/tile_0048.png');
-  background-size: 16px 16px;
-  background-repeat: repeat;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+.treasure-icon {
+  left: 16px;
+  top: 16px;
+  width: 48px;
+  height: 48px;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 0 3px #d4a017);
+}
+
+.highlight-overlay {
+  background: rgba(212, 160, 23, 0.2);
 }
