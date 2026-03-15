@@ -9,6 +9,13 @@ export interface GameSettings {
   aiSpeed: AiSpeed;
 }
 
+export interface CollectedEvent {
+  playerId: number;
+  treasure: string;
+  tileRow: number;
+  tileCol: number;
+}
+
 export interface GameState {
   board: Tile[][];
   spareTile: Tile;
@@ -16,6 +23,7 @@ export interface GameState {
   currentPlayerIndex: number;
   phase: GamePhase;
   lastShift: ShiftPosition | null;
+  lastCollected: CollectedEvent | null;
   settings: GameSettings;
   winner: Player | null;
 }

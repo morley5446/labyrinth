@@ -27,14 +27,25 @@
       <div class="players-section">
         @for (player of state.players; track player.id; let i = $index) {
           <div class="player-card" [class.active]="i === state.currentPlayerIndex">
-            <div class="player-color-pip" [style.background]="['#ef4444','#3b82f6','#22c55e','#eab308'][i]"></div>
+            <div class="player-avatar-pip"
+                 [id]="'player-pip-' + player.id"
+                 [style.border-color]="player.colorHex"
+                 [style.box-shadow]="'0 0 10px ' + player.colorHex">
+              <img [src]="'tiles/' + player.avatar + '.png'" class="pip-avatar-img" [alt]="player.name" />
+            </div>
             <div class="player-body">
               <div class="player-top">
                 <span class="player-name">{{ player.name }}</span>
                 <span class="player-score">{{ player.collectedCards.length }}<span class="player-score-total">/{{ player.collectedCards.length + player.cards.length }}</span></span>
               </div>
               @if (player.cards[0]) {
-                <div class="player-quest">↠ {{ player.cards[0] }}</div>
+                <div class="player-quest-pill">
+                  <img [src]="'icons/' + player.cards[0] + '.jpg'" class="quest-pill-icon" [alt]="player.cards[0]" />
+                  <div class="quest-pill-text">
+                    <span class="quest-pill-label">Nächster Schatz</span>
+                    <span class="quest-pill-name">{{ player.cards[0] }}</span>
+                  </div>
+                </div>
               } @else {
                 <div class="player-quest win">↠ Zurück zum Start!</div>
               }
@@ -93,21 +104,32 @@
       <app-shift-arrows
         [lastShift]="state.lastShift"
         [canShift]="state.phase === 'shift'"
+        [tileSize]="tileSize"
+        [spareTile]="state.spareTile"
         (shift)="onShift($event)">
 
-        <div class="board-grid"
-             style="grid-template-columns: repeat(7, 80px)">
+        <div class="board-grid">
           @for (row of state.board; track $index; let r = $index) {
+            <div class="board-row">
             @for (tile of row; track $index; let c = $index) {
-              <div class="tile-slot" (click)="onTileClick(state, r, c)">
+              <div class="tile-slot" (click)="onTileClick(state, r, c)"
+                   [id]="'tile-' + r + '-' + c">
                 <app-tile [tile]="tile"
+                          [size]="tileSize"
                           [highlighted]="state.settings.showReachableFields && isReachable(r, c)"
+                          [isTarget]="isTreasureTile(r, c)"
                           [selected]="false" />
-                @for (player of playersAt(state, r, c); track player.id) {
-                  <app-player-pawn [color]="player.color" />
+                @for (player of playersAt(state, r, c); track player.id; let pi = $index; let total = $count) {
+                  <app-player-pawn [colorHex]="player.colorHex" [avatar]="player.avatar"
+                                   [pawnIndex]="pi" [pawnCount]="total" />
+                }
+                @for (marker of startMarkersAt(state, r, c); track marker.id) {
+                  <div class="start-marker" [style.background]="marker.colorHex"
+                       [style.box-shadow]="'0 0 5px ' + marker.colorHex"></div>
                 }
               </div>
             }
+            </div>
           }
         </div>
 

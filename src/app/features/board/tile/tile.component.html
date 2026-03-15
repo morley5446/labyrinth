@@ -14,6 +14,7 @@
   @if (tile.treasure) {
     <img [src]="'icons/' + tile.treasure + '.jpg'"
          class="absolute pointer-events-none treasure-icon"
+         [class.treasure-icon-target]="isTarget"
          [alt]="tile.treasure" />
   }
 

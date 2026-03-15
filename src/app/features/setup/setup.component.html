@@ -1,56 +1,151 @@
-<div class="min-h-screen flex flex-col items-center justify-center p-8 bg-forest-dark">
-  <h1 class="text-5xl font-fairy text-gold mb-2 drop-shadow-lg">Das verrückte Labyrinth</h1>
-  <p class="text-gold-light/60 mb-10 text-lg">Wähle deine Abenteurer</p>
+<div class="setup-root">
 
-  <div class="grid grid-cols-2 gap-4 mb-8 w-full max-w-2xl">
-    @for (player of players; track player; let i = $index) {
-      <div class="rounded-xl border-2 p-4 transition-all duration-300"
-           [class.border-gold]="player.active"
-           [class.border-wood]="!player.active"
-           [class.bg-wood-dark]="player.active"
-           [class.opacity-60]="!player.active">
+  <!-- Background layers -->
+  <div class="setup-bg"></div>
+  <div class="setup-vignette"></div>
 
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-5 h-5 rounded-full border-2 border-gold"
-               [style.background]="colors[i]"></div>
-          <input [(ngModel)]="player.name"
-                 class="bg-transparent text-gold font-fairy text-lg flex-1 border-b border-gold/30 focus:outline-none focus:border-gold"
-                 [disabled]="!player.active" />
-          <label class="cursor-pointer">
-            <input type="checkbox" [(ngModel)]="player.active" class="sr-only" />
-            <span class="text-xs text-gold/60">{{ player.active ? 'Aktiv' : 'Inaktiv' }}</span>
-          </label>
-        </div>
+  <!-- Content -->
+  <div class="setup-content">
 
-        @if (player.active) {
-          <div class="flex gap-2">
-            <button class="flex-1 py-1 px-2 rounded text-xs transition-colors"
-                    [class.bg-gold]="!player.isAI" [class.text-forest-dark]="!player.isAI"
-                    [class.text-gold]="player.isAI"
-                    (click)="player.isAI = false">Mensch</button>
-            <button class="flex-1 py-1 px-2 rounded text-xs transition-colors"
-                    [class.bg-gold]="player.isAI" [class.text-forest-dark]="player.isAI"
-                    [class.text-gold]="!player.isAI"
-                    (click)="player.isAI = true">KI</button>
+    <!-- ══ TITLE ══ -->
+    <header class="setup-header">
+      <div class="ornament-line">
+        <span class="ornament-dash"></span>
+        <span class="ornament-rune">✦</span>
+        <span class="ornament-dash"></span>
+      </div>
+      <h1 class="setup-title">Das Verrückte<br><span>Labyrinth</span></h1>
+      <p class="setup-subtitle">Wähle deine Abenteurer</p>
+      <div class="ornament-line">
+        <span class="ornament-dash"></span>
+        <span class="ornament-rune">✦</span>
+        <span class="ornament-dash"></span>
+      </div>
+    </header>
+
+    <!-- ══ PLAYER CARDS ══ -->
+    <div class="players-grid">
+      @for (player of players; track trackByIdx($index); let i = $index) {
+        <div class="player-card" [class.inactive]="!player.active" [style.--accent]="player.colorHex">
+
+          <!-- Card header: Roman numeral + active toggle -->
+          <div class="card-header">
+            <span class="player-numeral">{{ playerLabel(i) }}</span>
+            <button class="toggle-btn" (click)="toggleActive(i)"
+                    [class.is-active]="player.active"
+                    [title]="player.active ? 'Deaktivieren' : 'Aktivieren'">
+              {{ player.active ? 'Aktiv' : 'Inaktiv' }}
+            </button>
           </div>
 
-          @if (player.isAI) {
-            <select [(ngModel)]="player.aiDifficulty"
-                    class="mt-2 w-full bg-wood-dark text-gold-light text-xs rounded px-2 py-1 border border-gold/20">
-              <option value="easy">Leicht</option>
-              <option value="medium">Mittel</option>
-              <option value="hard">Schwer</option>
-            </select>
+          @if (player.active) {
+            <!-- Portrait medallion -->
+            <div class="portrait-ring" [style.border-color]="player.colorHex"
+                 [style.box-shadow]="'0 0 18px ' + player.colorHex + '66, 0 0 40px ' + player.colorHex + '22'">
+              <div class="portrait-inner">
+                <img [src]="'tiles/' + player.avatar + '.png'"
+                     class="portrait-img" [alt]="player.avatar" />
+              </div>
+            </div>
+
+            <!-- Avatar selector -->
+            <div class="section-label">Charakter</div>
+            <div class="avatar-grid">
+              @for (av of avatars; track av) {
+                <button class="avatar-thumb" (click)="selectAvatar(player, av)"
+                        [class.selected]="player.avatar === av"
+                        [style.border-color]="player.avatar === av ? player.colorHex : 'transparent'"
+                        [style.box-shadow]="player.avatar === av ? '0 0 8px ' + player.colorHex : 'none'">
+                  <img [src]="'tiles/' + av + '.png'" [alt]="av" />
+                </button>
+              }
+            </div>
+
+            <!-- Color picker -->
+            <div class="color-row">
+              <div class="section-label">Farbe</div>
+              <button class="color-current" (click)="toggleColorPicker(i)"
+                      [style.background]="player.colorHex"
+                      [style.box-shadow]="'0 0 10px ' + player.colorHex + '88'"
+                      title="Farbe wählen"></button>
+            </div>
+            @if (openColorPicker === i) {
+              <div class="color-palette">
+                @for (hex of palette; track hex) {
+                  <button class="color-swatch" (click)="selectColor(player, hex, i)"
+                          [style.background]="hex"
+                          [class.active]="player.colorHex === hex"
+                          [style.box-shadow]="player.colorHex === hex ? '0 0 8px ' + hex : 'none'"
+                          [title]="hex"></button>
+                }
+              </div>
+            }
+
+            <!-- Name input -->
+            <div class="section-label">Name</div>
+            <div class="name-input-wrap">
+              <input class="name-input" [(ngModel)]="player.name"
+                     [style.--accent]="player.colorHex"
+                     placeholder="Spielername…" />
+              <span class="name-edit-icon">✎</span>
+            </div>
+
+            <!-- Human / AI toggle -->
+            <div class="type-toggle">
+              <button class="type-btn" [class.active]="!player.isAI"
+                      [style.--accent]="player.colorHex"
+                      (click)="player.isAI = false">Mensch</button>
+              <button class="type-btn" [class.active]="player.isAI"
+                      [style.--accent]="player.colorHex"
+                      (click)="player.isAI = true">Geist</button>
+            </div>
+
+            @if (player.isAI) {
+              <select class="difficulty-select" [(ngModel)]="player.aiDifficulty"
+                      [style.border-color]="player.colorHex + '44'">
+                <option value="easy">Leicht</option>
+                <option value="medium">Mittel</option>
+                <option value="hard">Schwer</option>
+              </select>
+            }
+
+          } @else {
+            <!-- Inactive placeholder -->
+            <div class="inactive-placeholder">
+              <div class="inactive-icon">+</div>
+              <span>Spieler hinzufügen</span>
+              <button class="activate-btn" (click)="toggleActive(i)">Aktivieren</button>
+            </div>
           }
+
+        </div>
+      }
+    </div>
+
+    <!-- ══ TREASURE COUNT ══ -->
+    <div class="cards-section">
+      <span class="cards-label">Schätze pro Spieler</span>
+      <div class="cards-options">
+        @for (n of cardOptions; track n) {
+          <button class="cards-btn" [class.selected]="cardsPerPlayer === n"
+                  [style.--accent]="cardsPerPlayer === n ? 'var(--gold)' : 'transparent'"
+                  (click)="cardsPerPlayer = n">{{ n }}</button>
         }
       </div>
-    }
-  </div>
+      <span class="cards-hint">{{ cardsPerPlayer * activePlayers.length }} Schätze gesamt</span>
+    </div>
 
-  <button (click)="onStart()" [disabled]="!canStart"
-          class="px-12 py-4 bg-gold text-forest-dark font-fairy text-2xl rounded-xl
-                 hover:bg-gold-light transition-all duration-300 shadow-lg
-                 disabled:opacity-40 disabled:cursor-not-allowed">
-    Abenteuer beginnen!
-  </button>
+    <!-- ══ START BUTTON ══ -->
+    <div class="start-wrap">
+      <button class="start-btn" (click)="onStart()" [disabled]="!canStart">
+        <span class="start-rune">⚔</span>
+        <span>Abenteuer beginnen</span>
+        <span class="start-rune">⚔</span>
+      </button>
+      @if (!canStart) {
+        <p class="start-hint">Mindestens 2 Spieler erforderlich</p>
+      }
+    </div>
+
+  </div>
 </div>

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from './core/services/game.service';
-import { SetupComponent } from './features/setup/setup.component';
+import { SetupComponent, SetupResult } from './features/setup/setup.component';
 import { BoardComponent } from './features/board/board.component';
 import { GameOverComponent } from './features/game-over/game-over.component';
 
@@ -12,7 +12,7 @@ import { GameOverComponent } from './features/game-over/game-over.component';
   template: `
     @switch ((game.state$ | async)?.phase) {
       @case ('setup') {
-        <app-setup (startGame)="game.startGame($event)" />
+        <app-setup (startGame)="onStart($event)" />
       }
       @case ('game-over') {
         @if ((game.state$ | async)?.winner; as winner) {
@@ -27,4 +27,8 @@ import { GameOverComponent } from './features/game-over/game-over.component';
 })
 export class App {
   constructor(public game: GameService) {}
+
+  onStart(result: SetupResult): void {
+    this.game.startGame(result.players, result.cardsPerPlayer);
+  }
 }

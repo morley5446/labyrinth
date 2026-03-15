@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#2a1a08"/>
+      <stop offset="100%" stop-color="#0d0500"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0c040"/>
+      <stop offset="50%" stop-color="#d4a017"/>
+      <stop offset="100%" stop-color="#8a6510"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5a4a30"/>
+      <stop offset="100%" stop-color="#3a2a15"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="128" height="128" rx="20" fill="url(#bg)"/>
+  <!-- Border -->
+  <rect x="2" y="2" width="124" height="124" rx="18" fill="none" stroke="url(#gold)" stroke-width="2.5" opacity="0.7"/>
+  <!-- Maze walls -->
+  <g fill="none" stroke="url(#wall)" stroke-width="5" stroke-linecap="round" opacity="0.6">
+    <!-- outer ring -->
+    <path d="M28,28 h72 v72 h-72 z"/>
+    <!-- inner paths -->
+    <path d="M28,50 h22"/>
+    <path d="M64,28 v22"/>
+    <path d="M78,50 h22"/>
+    <path d="M50,64 v36"/>
+    <path d="M78,64 v22"/>
+    <path d="M28,78 h22"/>
+    <path d="M64,78 h36"/>
+  </g>
+  <!-- Gold maze overlay -->
+  <g fill="none" stroke="url(#gold)" stroke-width="2.5" stroke-linecap="round" opacity="0.85">
+    <path d="M28,28 h72 v72 h-72 z"/>
+    <path d="M28,50 h22"/>
+    <path d="M64,28 v22"/>
+    <path d="M78,50 h22"/>
+    <path d="M50,64 v36"/>
+    <path d="M78,64 v22"/>
+    <path d="M28,78 h22"/>
+    <path d="M64,78 h36"/>
+  </g>
+  <!-- Center gem -->
+  <circle cx="64" cy="56" r="8" fill="#d4a017" opacity="0.9"/>
+  <circle cx="64" cy="56" r="4" fill="#f0c040"/>
+  <circle cx="62" cy="54" r="1.5" fill="#fff" opacity="0.7"/>
+  <!-- Glow -->
+  <circle cx="64" cy="56" r="14" fill="none" stroke="#d4a017" stroke-width="1" opacity="0.3"/>
+</svg>

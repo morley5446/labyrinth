@@ -17,6 +17,7 @@ const INITIAL_STATE: GameState = {
   currentPlayerIndex: 0,
   phase: 'setup',
   lastShift: null,
+  lastCollected: null,
   settings: DEFAULT_SETTINGS,
   winner: null,
 };
@@ -32,9 +33,10 @@ export class GameService {
     return this.stateSubject.getValue();
   }
 
-  startGame(configs: { name: string; isAI: boolean; aiDifficulty?: any }[]): void {
-    const { board, spareTile } = this.board.initializeBoard(configs.length);
-    const players = this.board.initializePlayers(configs, configs.length);
+  startGame(configs: { name: string; isAI: boolean; aiDifficulty?: any; colorHex?: string; avatar?: string }[], cardsPerPlayer?: number): void {
+    const players = this.board.initializePlayers(configs, configs.length, cardsPerPlayer);
+    const activeTreasures = new Set(players.flatMap(p => p.cards));
+    const { board, spareTile } = this.board.initializeBoard(configs.length, activeTreasures);
     this.stateSubject.next({
       ...INITIAL_STATE,
       board, spareTile, players,
@@ -59,6 +61,7 @@ export class GameService {
       players: newPlayers ?? state.players,
       phase: 'move',
       lastShift: shift,
+      lastCollected: null,
     });
   }
 
@@ -71,6 +74,8 @@ export class GameService {
     const isReachable = reachable.some(p => p.row === target.row && p.col === target.col);
     if (!isReachable) return;
 
+    let collectedEvent = null;
+    let newBoard = state.board;
     const newPlayers = state.players.map((p, i) => {
       if (i !== state.currentPlayerIndex) return p;
       const updated = { ...p, position: target };
@@ -78,6 +83,13 @@ export class GameService {
       if (tile.treasure && p.cards[0] === tile.treasure) {
         updated.cards = p.cards.slice(1);
         updated.collectedCards = [...p.collectedCards, tile.treasure];
+        collectedEvent = { playerId: p.id, treasure: tile.treasure, tileRow: target.row, tileCol: target.col };
+        // Remove treasure from the board tile
+        newBoard = newBoard.map((row, r) =>
+          r !== target.row ? row : row.map((t, c) =>
+            c !== target.col ? t : { ...t, treasure: null }
+          )
+        );
       }
       return updated;
     });
@@ -92,10 +104,12 @@ export class GameService {
 
     this.stateSubject.next({
       ...state,
+      board: newBoard,
       players: newPlayers,
       phase: hasWon ? 'game-over' : 'shift',
       currentPlayerIndex: hasWon ? state.currentPlayerIndex : nextIndex,
       winner: hasWon ? newPlayers[state.currentPlayerIndex] : null,
+      lastCollected: collectedEvent,
     });
   }
 
@@ -117,7 +131,7 @@ export class GameService {
       ? rotations[(current + 1) % 4]
       : rotations[(current + 3) % 4];
     const rotated = { ...spare, rotation: next, paths: this.board.computePaths(spare.type, next) };
-    this.stateSubject.next({ ...state, spareTile: rotated });
+    this.stateSubject.next({ ...state, spareTile: rotated, lastCollected: null });
   }
 
   resetGame(): void {

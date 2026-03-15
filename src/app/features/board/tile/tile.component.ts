@@ -16,6 +16,7 @@ export class TileComponent {
   @Input() highlighted = false;
   @Input() selected = false;
   @Input() size = 80;
+  @Input() isTarget = false;
 
   get tileImage(): string {
     switch (this.tile.type) {

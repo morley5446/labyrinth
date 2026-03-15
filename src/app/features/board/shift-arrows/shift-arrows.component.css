@@ -1,0 +1,250 @@
+/* ─── Grid container ────────────────────────────────────────────── */
+
+.sa-grid {
+  display: inline-grid;
+  align-items: center;
+  justify-items: center;
+}
+
+.sa-corner { width: 44px; height: 44px; }
+
+/* ─── Strips ────────────────────────────────────────────────────── */
+
+.sa-strip--top,
+.sa-strip--bottom {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0 3px;
+  gap: 2px;
+}
+
+.sa-strip--left,
+.sa-strip--right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 3px 0;
+  gap: 2px;
+}
+
+/* ─── Slots ─────────────────────────────────────────────────────── */
+
+.sa-slot--h {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sa-slot--v {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ─── Button wrapper (anchor for preview) ───────────────────────── */
+
+.sa-btn-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ─── Shift Button ──────────────────────────────────────────────── */
+
+.sa-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  border: 1px solid rgba(212,160,23,0.18);
+  background:
+    linear-gradient(145deg, rgba(28,13,3,0.96), rgba(14,6,1,0.98));
+  color: rgba(212,160,23,0.3);
+  cursor: default;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Inner stone texture line */
+.sa-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 3px;
+  border: 1px solid rgba(212,160,23,0.06);
+  pointer-events: none;
+}
+
+/* ─── Active state ──────────────────────────────────────────────── */
+
+.sa-btn--active {
+  border-color: rgba(212,160,23,0.55);
+  color: rgba(212,160,23,0.8);
+  cursor: pointer;
+  animation: saGlow 2.4s ease-in-out infinite;
+  box-shadow:
+    0 0 10px rgba(212,160,23,0.25),
+    0 2px 8px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.sa-btn--active:hover {
+  border-color: rgba(240,192,64,0.95);
+  color: #f5d060;
+  background:
+    linear-gradient(145deg, rgba(212,160,23,0.2), rgba(212,160,23,0.08));
+  transform: scale(1.2);
+  box-shadow:
+    0 0 22px rgba(212,160,23,0.65),
+    0 0 44px rgba(212,160,23,0.25),
+    0 3px 10px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,200,50,0.12);
+  animation: none;
+}
+
+/* ─── Blocked state ─────────────────────────────────────────────── */
+
+.sa-btn--blocked {
+  opacity: 0.15;
+  cursor: not-allowed;
+  border-color: rgba(212,160,23,0.06);
+}
+
+/* ─── Glow pulse ────────────────────────────────────────────────── */
+
+@keyframes saGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 6px rgba(212,160,23,0.15),
+      0 2px 8px rgba(0,0,0,0.6);
+    border-color: rgba(212,160,23,0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 16px rgba(212,160,23,0.45),
+      0 0 28px rgba(212,160,23,0.15),
+      0 2px 8px rgba(0,0,0,0.6);
+    border-color: rgba(212,160,23,0.75);
+  }
+}
+
+/* ─── Arrow glyphs (CSS triangles) ──────────────────────────────── */
+
+.sa-arrow {
+  display: block;
+  width: 0;
+  height: 0;
+}
+
+.sa-arrow--down {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid currentColor;
+}
+
+.sa-arrow--up {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 7px solid currentColor;
+}
+
+.sa-arrow--right {
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid currentColor;
+}
+
+.sa-arrow--left {
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 7px solid currentColor;
+}
+
+/* ─── Inline tile preview (replaces button in-place) ────────────── */
+
+.sa-tile-inplace {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  overflow: hidden;
+  pointer-events: none;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.sa-tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  border-radius: 3px;
+  display: block;
+}
+
+/* ─── Hover preview (spare entering) ────────────────────────────── */
+
+.sa-tile-hover {
+  border: 1.5px solid rgba(212,160,23,0.85);
+  box-shadow:
+    0 0 14px rgba(212,160,23,0.6),
+    0 0 4px rgba(0,0,0,0.8);
+  opacity: 0.92;
+}
+
+/* Nudge animations: tile slides a few px toward the board then back */
+.sa-tile-hover--right {
+  animation: nudgeRight 0.7s ease-in-out infinite;
+}
+.sa-tile-hover--left {
+  animation: nudgeLeft 0.7s ease-in-out infinite;
+}
+.sa-tile-hover--down {
+  animation: nudgeDown 0.7s ease-in-out infinite;
+}
+.sa-tile-hover--up {
+  animation: nudgeUp 0.7s ease-in-out infinite;
+}
+
+@keyframes nudgeRight {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(5px); }
+}
+@keyframes nudgeLeft {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(-5px); }
+}
+@keyframes nudgeDown {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(5px); }
+}
+@keyframes nudgeUp {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+
+/* ─── Ejected tile (fades out after shift) ───────────────────────── */
+
+.sa-tile-ejected {
+  border: 1px solid rgba(180,120,20,0.45);
+  box-shadow:
+    0 0 8px rgba(212,160,23,0.3),
+    0 2px 6px rgba(0,0,0,0.6);
+  animation: ejectedFade 1.6s ease forwards;
+}
+
+@keyframes ejectedFade {
+  0%   { opacity: 0.9; transform: scale(1); }
+  30%  { opacity: 0.7; }
+  100% { opacity: 0;   transform: scale(0.72); }
+}

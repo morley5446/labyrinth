@@ -69,14 +69,16 @@ export class BoardService {
     return a;
   }
 
-  initializeBoard(playerCount: number): { board: Tile[][], spareTile: Tile } {
+  initializeBoard(playerCount: number, activeTreasures?: Set<TreasureId>): { board: Tile[][], spareTile: Tile } {
     const fixedMap = new Map<string, Tile>();
     const fixedTreasures = new Set<TreasureId>();
 
     for (const [r, c, type, rotation, treasure] of FIXED_TILES) {
+      // Only place treasure if it's in the active set (or no filter given)
+      const activeTreasure = treasure && (!activeTreasures || activeTreasures.has(treasure)) ? treasure : null;
       if (treasure) fixedTreasures.add(treasure);
       fixedMap.set(`${r},${c}`, {
-        type, rotation, treasure,
+        type, rotation, treasure: activeTreasure,
         paths: this.computePaths(type, rotation),
       });
     }
@@ -84,6 +86,11 @@ export class BoardService {
     const remainingTreasures = this.shuffle(
       ALL_TREASURES.filter(t => !fixedTreasures.has(t))
     );
+
+    // Filter remaining treasures to only active ones
+    const activeRemaining = activeTreasures
+      ? remainingTreasures.filter(t => activeTreasures.has(t))
+      : remainingTreasures;
 
     const RANDOM_TYPES: TileType[] = [
       ...Array(13).fill('straight'),
@@ -94,7 +101,7 @@ export class BoardService {
 
     const randomTiles: Tile[] = shuffledTypes.map((type, i) => {
       const rotation = this.randomRotation();
-      const treasure = i < remainingTreasures.length ? remainingTreasures[i] : null;
+      const treasure = i < activeRemaining.length ? activeRemaining[i] : null;
       return { type, rotation, treasure, paths: this.computePaths(type, rotation) };
     });
 
@@ -257,20 +264,23 @@ export class BoardService {
     return null;
   }
 
-  initializePlayers(configs: { name: string; isAI: boolean; aiDifficulty?: any }[], playerCount: number): Player[] {
+  initializePlayers(configs: { name: string; isAI: boolean; aiDifficulty?: any; colorHex?: string; avatar?: string }[], playerCount: number, cardsPerPlayer?: number): Player[] {
+    const DEFAULT_COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#eab308'];
+    const cards = cardsPerPlayer ?? Math.floor(ALL_TREASURES.length / playerCount);
+    const allCards = this.shuffle(ALL_TREASURES);
     return configs.slice(0, playerCount).map((config, i) => {
       const id = (i + 1) as PlayerId;
-      const allCards = this.shuffle(ALL_TREASURES);
-      const cardsPerPlayer = Math.floor(ALL_TREASURES.length / playerCount);
       return {
         id,
         name: config.name,
         color: PLAYER_COLORS[i],
+        colorHex: config.colorHex ?? DEFAULT_COLORS[i],
+        avatar: config.avatar ?? `Player${i + 1}`,
         isAI: config.isAI,
         aiDifficulty: config.aiDifficulty,
         position: { ...START_POSITIONS[id] },
         startPosition: { ...START_POSITIONS[id] },
-        cards: allCards.slice(i * cardsPerPlayer, (i + 1) * cardsPerPlayer),
+        cards: allCards.slice(i * cards, (i + 1) * cards),
         collectedCards: [],
       };
     });

@@ -1,99 +1,153 @@
-<!-- Outer grid: 3 cols (left-arrows | board | right-arrows) x 3 rows (top | board | bottom) -->
-<div style="display: inline-grid; grid-template-columns: 36px auto 36px; grid-template-rows: 36px auto 36px; align-items: center; justify-items: center">
+<!-- 3×3 grid: [left-strip | board | right-strip] × [top-strip | board | bottom-strip] -->
+<div class="sa-grid"
+     [style.grid-template-columns]="'44px auto 44px'"
+     [style.grid-template-rows]="'44px auto 44px'">
 
-  <!-- [0,0] top-left corner -->
-  <div></div>
+  <div class="sa-corner"></div>
 
-  <!-- [0,1] top arrows — flex row aligned with tile columns -->
-  <div style="display: flex; padding: 0 6px; gap: 4px; align-items: center; justify-content: flex-start; width: 100%">
+  <!-- TOP strip (emits 'down': spare enters from top) -->
+  <div class="sa-strip sa-strip--top">
     @for (i of allSlots; track i) {
-      <div style="width: 80px; display: flex; justify-content: center; flex-shrink: 0">
+      <div class="sa-slot sa-slot--h" [style.width.px]="tileSize">
         @if (isShiftable(i)) {
-          <button
-            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
-            [class.text-gold]="canShift && !isBlocked('down', i)"
-            [class.hover:bg-gold]="canShift && !isBlocked('down', i)"
-            [class.hover:text-forest-dark]="canShift && !isBlocked('down', i)"
-            [class.text-wood]="!canShift || isBlocked('down', i)"
-            [class.opacity-30]="isBlocked('down', i)"
-            (click)="emit('down', i)"
-            [disabled]="!canShift || isBlocked('down', i)"
-            [title]="'Spalte ' + i + ' von oben'">▼</button>
+          <div class="sa-btn-wrap"
+               (mouseenter)="onHover('down', i)"
+               (mouseleave)="onLeave()"
+               (click)="emit('down', i)"
+               (touchend)="onTap('down', i); $event.preventDefault()">
+            @if (ejectedPreview && ejectedPreview.dir === 'down' && ejectedPreview.idx === i) {
+              <div class="sa-tile-inplace sa-tile-ejected">
+                <img class="sa-tile-img" [src]="getTileImageUrl(ejectedPreview.tile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(ejectedPreview.tile) + 'deg)'" />
+              </div>
+            } @else if (spareTile && hoveredDir === 'down' && hoveredIdx === i && canShift && !isBlocked('down', i)) {
+              <div class="sa-tile-inplace sa-tile-hover sa-tile-hover--down">
+                <img class="sa-tile-img" [src]="getTileImageUrl(spareTile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(spareTile) + 'deg)'" />
+              </div>
+            } @else {
+              <button class="sa-btn sa-btn--down"
+                      [class.sa-btn--active]="canShift && !isBlocked('down', i)"
+                      [class.sa-btn--blocked]="isBlocked('down', i)"
+                      [disabled]="!canShift || isBlocked('down', i)">
+                <span class="sa-arrow sa-arrow--down"></span>
+              </button>
+            }
+          </div>
         }
       </div>
     }
   </div>
 
-  <!-- [0,2] top-right corner -->
-  <div></div>
+  <div class="sa-corner"></div>
 
-  <!-- [1,0] left arrows — flex column aligned with tile rows -->
-  <div style="display: flex; flex-direction: column; padding: 6px 0; gap: 4px; align-items: center; height: 100%">
+  <!-- LEFT strip (emits 'left': spare enters from left) -->
+  <div class="sa-strip sa-strip--left">
     @for (i of allSlots; track i) {
-      <div style="height: 80px; display: flex; align-items: center; flex-shrink: 0">
+      <div class="sa-slot sa-slot--v" [style.height.px]="tileSize">
         @if (isShiftable(i)) {
-          <button
-            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
-            [class.text-gold]="canShift && !isBlocked('right', i)"
-            [class.hover:bg-gold]="canShift && !isBlocked('right', i)"
-            [class.hover:text-forest-dark]="canShift && !isBlocked('right', i)"
-            [class.text-wood]="!canShift || isBlocked('right', i)"
-            [class.opacity-30]="isBlocked('right', i)"
-            (click)="emit('left', i)"
-            [disabled]="!canShift || isBlocked('left', i)"
-            [title]="'Zeile ' + i + ' von links'">▶</button>
+          <div class="sa-btn-wrap"
+               (mouseenter)="onHover('left', i)"
+               (mouseleave)="onLeave()"
+               (click)="emit('left', i)"
+               (touchend)="onTap('left', i); $event.preventDefault()">
+            @if (ejectedPreview && ejectedPreview.dir === 'left' && ejectedPreview.idx === i) {
+              <div class="sa-tile-inplace sa-tile-ejected">
+                <img class="sa-tile-img" [src]="getTileImageUrl(ejectedPreview.tile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(ejectedPreview.tile) + 'deg)'" />
+              </div>
+            } @else if (spareTile && hoveredDir === 'left' && hoveredIdx === i && canShift && !isBlocked('left', i)) {
+              <div class="sa-tile-inplace sa-tile-hover sa-tile-hover--right">
+                <img class="sa-tile-img" [src]="getTileImageUrl(spareTile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(spareTile) + 'deg)'" />
+              </div>
+            } @else {
+              <button class="sa-btn sa-btn--right"
+                      [class.sa-btn--active]="canShift && !isBlocked('left', i)"
+                      [class.sa-btn--blocked]="isBlocked('left', i)"
+                      [disabled]="!canShift || isBlocked('left', i)">
+                <span class="sa-arrow sa-arrow--right"></span>
+              </button>
+            }
+          </div>
         }
       </div>
     }
   </div>
 
-  <!-- [1,1] board content -->
+  <!-- BOARD -->
   <ng-content></ng-content>
 
-  <!-- [1,2] right arrows -->
-  <div style="display: flex; flex-direction: column; padding: 6px 0; gap: 4px; align-items: center; height: 100%">
+  <!-- RIGHT strip (emits 'right': spare enters from right) -->
+  <div class="sa-strip sa-strip--right">
     @for (i of allSlots; track i) {
-      <div style="height: 80px; display: flex; align-items: center; flex-shrink: 0">
+      <div class="sa-slot sa-slot--v" [style.height.px]="tileSize">
         @if (isShiftable(i)) {
-          <button
-            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
-            [class.text-gold]="canShift && !isBlocked('left', i)"
-            [class.hover:bg-gold]="canShift && !isBlocked('left', i)"
-            [class.hover:text-forest-dark]="canShift && !isBlocked('left', i)"
-            [class.text-wood]="!canShift || isBlocked('left', i)"
-            [class.opacity-30]="isBlocked('left', i)"
-            (click)="emit('right', i)"
-            [disabled]="!canShift || isBlocked('right', i)"
-            [title]="'Zeile ' + i + ' von rechts'">◀</button>
+          <div class="sa-btn-wrap"
+               (mouseenter)="onHover('right', i)"
+               (mouseleave)="onLeave()"
+               (click)="emit('right', i)"
+               (touchend)="onTap('right', i); $event.preventDefault()">
+            @if (ejectedPreview && ejectedPreview.dir === 'right' && ejectedPreview.idx === i) {
+              <div class="sa-tile-inplace sa-tile-ejected">
+                <img class="sa-tile-img" [src]="getTileImageUrl(ejectedPreview.tile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(ejectedPreview.tile) + 'deg)'" />
+              </div>
+            } @else if (spareTile && hoveredDir === 'right' && hoveredIdx === i && canShift && !isBlocked('right', i)) {
+              <div class="sa-tile-inplace sa-tile-hover sa-tile-hover--left">
+                <img class="sa-tile-img" [src]="getTileImageUrl(spareTile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(spareTile) + 'deg)'" />
+              </div>
+            } @else {
+              <button class="sa-btn sa-btn--left"
+                      [class.sa-btn--active]="canShift && !isBlocked('right', i)"
+                      [class.sa-btn--blocked]="isBlocked('right', i)"
+                      [disabled]="!canShift || isBlocked('right', i)">
+                <span class="sa-arrow sa-arrow--left"></span>
+              </button>
+            }
+          </div>
         }
       </div>
     }
   </div>
 
-  <!-- [2,0] bottom-left corner -->
-  <div></div>
+  <div class="sa-corner"></div>
 
-  <!-- [2,1] bottom arrows -->
-  <div style="display: flex; padding: 0 6px; gap: 4px; align-items: center; justify-content: flex-start; width: 100%">
+  <!-- BOTTOM strip (emits 'up': spare enters from bottom) -->
+  <div class="sa-strip sa-strip--bottom">
     @for (i of allSlots; track i) {
-      <div style="width: 80px; display: flex; justify-content: center; flex-shrink: 0">
+      <div class="sa-slot sa-slot--h" [style.width.px]="tileSize">
         @if (isShiftable(i)) {
-          <button
-            class="w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-200"
-            [class.text-gold]="canShift && !isBlocked('up', i)"
-            [class.hover:bg-gold]="canShift && !isBlocked('up', i)"
-            [class.hover:text-forest-dark]="canShift && !isBlocked('up', i)"
-            [class.text-wood]="!canShift || isBlocked('up', i)"
-            [class.opacity-30]="isBlocked('up', i)"
-            (click)="emit('up', i)"
-            [disabled]="!canShift || isBlocked('up', i)"
-            [title]="'Spalte ' + i + ' von unten'">▲</button>
+          <div class="sa-btn-wrap"
+               (mouseenter)="onHover('up', i)"
+               (mouseleave)="onLeave()"
+               (click)="emit('up', i)"
+               (touchend)="onTap('up', i); $event.preventDefault()">
+            @if (ejectedPreview && ejectedPreview.dir === 'up' && ejectedPreview.idx === i) {
+              <div class="sa-tile-inplace sa-tile-ejected">
+                <img class="sa-tile-img" [src]="getTileImageUrl(ejectedPreview.tile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(ejectedPreview.tile) + 'deg)'" />
+              </div>
+            } @else if (spareTile && hoveredDir === 'up' && hoveredIdx === i && canShift && !isBlocked('up', i)) {
+              <div class="sa-tile-inplace sa-tile-hover sa-tile-hover--up">
+                <img class="sa-tile-img" [src]="getTileImageUrl(spareTile)"
+                     [style.transform]="'rotate(' + getTileCssRotation(spareTile) + 'deg)'" />
+              </div>
+            } @else {
+              <button class="sa-btn sa-btn--up"
+                      [class.sa-btn--active]="canShift && !isBlocked('up', i)"
+                      [class.sa-btn--blocked]="isBlocked('up', i)"
+                      [disabled]="!canShift || isBlocked('up', i)">
+                <span class="sa-arrow sa-arrow--up"></span>
+              </button>
+            }
+          </div>
         }
       </div>
     }
   </div>
 
-  <!-- [2,2] bottom-right corner -->
-  <div></div>
+  <div class="sa-corner"></div>
 
 </div>

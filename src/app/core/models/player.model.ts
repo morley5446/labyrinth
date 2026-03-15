@@ -13,6 +13,8 @@ export interface Player {
   id: PlayerId;
   name: string;
   color: PlayerColor;
+  colorHex: string;
+  avatar: string;
   isAI: boolean;
   aiDifficulty?: AiDifficulty;
   position: Position;
